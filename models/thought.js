@@ -1,69 +1,33 @@
 const { Schema, model, Types } = require('mongoose');
-const moment = require('moment');
-const { stringify } = require('querystring');
 const dateFormat = require('../utils/dateFormat');
+const ReactionSchema =  require('./Reaction')
 
-
-const thoughtSchema = new Schema(
-    {
-        thoughtText: {
-            type: String,
-            required: true,        
-            minlength: 1, 
-            maxlength: 280
-        },
-        createdAt:{
-            type: Date,
-            default: Date.now
-        },
-        username: {
-            type: String,
-            required: true, 
-            ref: 'User'
-        },
-        reactions: [ReactionSchema],        
-    },
-    {
-        toJSON: {
-            virtuals: true,
-            getters: true
-        },
-        id: false
-    }
-);
-
-const ReactionSchema = new Schema({
-    reactionId: {
-        type: Schema.Types.ObjectId,
-        default: () => new Types.ObjectId()
-    },
-    reactionBody: {
-        type: String,
-        required: true,
+const ThoughtSchema = new Schema (
+  {
+    thoughtText: {
+      type: String,
+      required: true,
+      //must be between 1-280 characters
+    },  
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      get: createdAtVal => dateFormat(createdAtVal)
     },
     username: {
-        type: String, 
-        required: true
+      type: String,
+      required: true
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-        get: createdAtVal => moment(createdAtVal).format('MM DD, YYY [at] hh: mm a')
-    }
-},
-    {
-        toJSON: {
-            virtuals: true,
-            getters: true
-        },
-        id: false
-    }
+    reactions: [ReactionSchema]
+  },
+  {
+    toJSON: {
+      getters: true
+    },
+    id: false
+  }
 );
-
-ThoughtSchema.virtual('reactionCount').get(function(){
-    return this.reactions.length;
-});
 
 const Thought = model('Thought', ThoughtSchema);
 
-module.exports = Thought; 
+module.exports = Thought;
