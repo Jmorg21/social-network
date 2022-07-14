@@ -8,7 +8,7 @@ const thoughtSchema = new Schema(
     {
         thoughtText: {
             type: String,
-            required: 'Need a message.',        
+            required: true,        
             minlength: 1, 
             maxlength: 280
         },
